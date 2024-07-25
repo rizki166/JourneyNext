@@ -1,95 +1,119 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+"use client";
 
-export default function Home() {
+import CardJourney from "@/component/Card/CardJourney";
+import InputJourney from "@/component/Input/InputJourney";
+import LoginModal from "@/component/Modal/LoginModal";
+import RegisterModal from "@/component/Modal/RegisterModal";
+import { useAppDispatch, useAppSelector } from "@/store";
+import { getJourneyAsync } from "@/store/async/journey";
+import { Box, Button, Typography, useMediaQuery } from "@mui/material";
+import { useEffect, useState } from "react";
+
+const Home = () => {
+  const isMobile = useMediaQuery("(max-width: 600px)");
+  const [isLoginOpen, setLoginOpen] = useState(false);
+  const [isRegisterOpen, setRegisterOpen] = useState(false);
+  const dispatch = useAppDispatch()
+  const journey = useAppSelector((state) => state.journey)
+
+  const handleLoginOpen = () => setLoginOpen(true);
+  const handleLoginClose = () => setLoginOpen(false);
+
+  const handleRegisterOpen = () => setRegisterOpen(true);
+  const handleRegisterClose = () => setRegisterOpen(false);
+  useEffect(() => {
+    dispatch(getJourneyAsync())
+  }, [dispatch])
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
+    <Box sx={{ position: "relative" }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "end",
+          alignItems: "center",
+          position: "absolute",
+          top: 10,
+          right: 20,
+          gap: 2,
+        }}
+      >
+        <Button
+          sx={{
+            color: "white",
+            border: "1px solid white",
+            fontWeight: 600,
+            width: isMobile ? "50px" : "100px",
+          }}
+          onClick={handleLoginOpen}
         >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
+          Login
+        </Button>
 
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
+        <Button
+          sx={{
+            backgroundColor: "#4486de",
+            color: "white",
+            fontWeight: 600,
+            width: isMobile ? "100%" : "100px",
+          }}
+          onClick={handleRegisterOpen}
         >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
+          Register
+        </Button>
+      </Box>
 
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
+      <img
+        src="/icon.png"
+        alt="logo"
+        style={{
+          position: "absolute",
+          top: 10,
+          left: 20,
+          width: isMobile ? "20%" : "10%",
+        }}
+      />
+      <img
+        src="/phuket.png"
+        alt="logo"
+        width="100%"
+        height={isMobile ? "250px" : "100%"}
+      />
 
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+      {!isMobile && (
+        <Box sx={{ position: "absolute", top: 200, left: 100 }}>
+          <Typography color="white" variant="h3">
+            The Journey
+          </Typography>
+          <Typography color="white" variant="h3">
+            you ever dreamed of.
+          </Typography>
+          <Typography color="white">
+            We made a tool so you can easily keep & share your travel memories.
+            But there is a lot more
+          </Typography>
+        </Box>
+      )}
+      <h1 style={{ marginLeft: "20px" }}>Journey</h1>
+      <InputJourney />
+      <Box sx={{
+         
+        display: "flex",
+        flexDirection: "row",
+        flexWrap: "wrap",
+        gap: 2,
+        justifyContent: "center",
+        marginTop: "20px",
+      }}>
+        {journey.journey.map((journey) => (
+          <CardJourney key={journey.id} journey={journey} />
+        ))
+
+        }
+      </Box>
+      <LoginModal open={isLoginOpen} onClose={handleLoginClose} />
+      <RegisterModal open={isRegisterOpen} onClose={handleRegisterClose} />
+    </Box>
   );
-}
+};
+
+export default Home;
